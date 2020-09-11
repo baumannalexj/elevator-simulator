@@ -16,9 +16,9 @@ public class ElevatorRepository {
     public ElevatorRepository(@Value("${elevator.count:4}") int elevatorCount) {
         this.elevators = new ArrayList<>(elevatorCount);
 
-        for (int index = 0; index < elevatorCount; index++) {
+        for (int id = 1; id <= elevatorCount; id++) {
             Elevator elevator = new Elevator();
-            elevator.id = index + 1;
+            elevator.id = id;
 
             this.elevators.add(elevator);
         }
