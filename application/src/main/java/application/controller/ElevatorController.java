@@ -1,17 +1,19 @@
 package application.controller;
 
 import application.model.Elevator;
+import application.model.HailRequest;
 import application.repository.ElevatorRepository;
 import application.service.ElevatorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController()
-@RequestMapping("/elevators")
+@RequestMapping(path = "/elevators",
+        consumes = "application/json",
+        produces = "application/json"
+)
 public class ElevatorController {
 
     private ElevatorService elevatorService;
@@ -26,6 +28,12 @@ public class ElevatorController {
     @GetMapping()
     public List<Elevator> getElevators() {
         return elevatorRepository.getAllElevators();
+    }
+
+    @PostMapping("/hail")
+    public boolean postHail(@RequestBody HailRequest hailRequest) {
+        //send off hail request
+        return true;
     }
 
 }
