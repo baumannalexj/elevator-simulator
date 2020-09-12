@@ -22,4 +22,6 @@ public class ApplicationContext {
         LOG.info("running \"" + name + "\" at http://localhost:" + port);
     }
 
+
+
 }

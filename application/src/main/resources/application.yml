@@ -10,3 +10,7 @@ server:
 spring:
   application:
     name: elevator-simulator
+
+elevator:
+  count: 4
+  maxOpenDoorSeconds: 10

@@ -1,11 +1,16 @@
 package application.controller;
 
 import application.model.Elevator;
-import application.model.HailRequest;
+import application.request.CommandRequest;
+import application.request.HailRequest;
 import application.repository.ElevatorRepository;
 import application.service.ElevatorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -32,8 +37,13 @@ public class ElevatorController {
 
     @PostMapping("/hail")
     public boolean postHail(@RequestBody HailRequest hailRequest) {
-        //send off hail request
-        return true;
+        return elevatorService.hailElevator(hailRequest);
+    }
+
+    @PostMapping("/command")
+    public boolean postCommand(@RequestBody CommandRequest commandRequest) {
+        return elevatorService.requestFloor(commandRequest);
+
     }
 
 }

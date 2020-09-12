@@ -10,6 +10,7 @@ public class Elevator {
 
     public int id;
     public int currentFloor = 1;
+    public int nextFloor = 1;
     public LocalDateTime lastOpen = LocalDateTime.now();
 
     public List<Person> persons = new ArrayList<>();
