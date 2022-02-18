@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,22 +30,20 @@ public class ElevatorController {
     }
 
     @GetMapping()
-    public List<ElevatorAgent> getElevators() {
-        return elevatorRepository.getAllElevators();
+    public ResponseEntity<List<ElevatorAgent>> getElevators() {
+        return ResponseEntity.ok(elevatorRepository.getAllElevators());
     }
 
-//
-//    @PostMapping("/destination")
-//    public destination() {
-////        which floor do you want to go to? needs destinationFloorNumber, elevatorNumber
-//    }
-//
+
+    @PostMapping("/destination")
+    public ResponseEntity<String> destination(@RequestBody RequestElevatorPanel requestElevatorPanel) {
+        elevatorRepository.addDestinationForElevatorId(requestElevatorPanel.getElevatorId(), requestElevatorPanel.getFloorNumber());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
     @PostMapping("/hail")
     public ResponseEntity<String> hail(@RequestBody @Validated RequestHail requestHail) {
-//        up or down, current floor
-
         elevatorRepository.addHail(requestHail);
-
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 

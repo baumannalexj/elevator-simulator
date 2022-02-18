@@ -33,7 +33,6 @@ public class ElevatorAgent
     }
 
     private int getNextFloor() {
-
         if (direction == Direction.IDLE) {
             return (int) yCoordinate;
         }
@@ -52,62 +51,90 @@ public class ElevatorAgent
     public void run() {
 
         while (ELEVATOR_IS_ON) {
-            LOG.info("I'm running {}, at y:{} i'm going:{}, and going to floors {}",
-                    id, yCoordinate, direction, directionQueueMap.get(direction));
-
-            final Optional<RequestHail> nextHailOpt = elevatorService.getNextHail(yCoordinate, direction);
-
-            if (nextHailOpt.isPresent()) {
-                RequestHail nextHail = nextHailOpt.get();
-
-                int pickupAtFloor = nextHail.getFromFloorNumber();
-
-                if (direction == Direction.IDLE) {
-                    if ((int) yCoordinate == pickupAtFloor) {
-//                        hmm
-                    } else {
-
-                        doorState = DoorState.CLOSED;
-
-                        direction = yCoordinate < pickupAtFloor
-                                ? Direction.UP
-                                : Direction.DOWN;
-                    }
-                }
-
-                final Queue<Integer> pQueue = directionQueueMap.get(direction);
-                pQueue.add(pickupAtFloor);
-
-            }
-
-            LOG.info("still running {}, at y:{} i'm going:{}, and going to floors {}",
-                    id, yCoordinate, direction, directionQueueMap.get(direction));
-
-
-            if (Direction.IDLE == direction) {
-                //  do nothing
-            } else if ((int) Math.floor(yCoordinate) == getNextFloor()) {
-//               TODO update range to stop
-                yCoordinate = getNextFloor();
-                doorState = DoorState.OPEN;
-                directionQueueMap.get(direction).poll();
-
-            } else {
-                doorState = DoorState.CLOSED;
-                yCoordinate += direction.getIntDirection() + (1.0D / SLEEP_IN_MILLIS);
-            }
-
-            LOG.info("finished running {}, y:{} i'm going:{} to floors {}",
-                    id, yCoordinate, direction, directionQueueMap.get(direction));
-
-
             try {
-                Thread.sleep(SLEEP_IN_MILLIS);
+                    LOG.info("I'm running {}, at y:{} i'm going:{}, and going to floors {}",
+                            id, yCoordinate, direction, directionQueueMap.get(direction));
+
+                    final Optional<RequestHail> nextHailOpt = elevatorService.getNextHail(yCoordinate, direction);
+
+                    if (nextHailOpt.isPresent()) {
+                        RequestHail nextHail = nextHailOpt.get();
+
+                        int pickupAtFloor = nextHail.getFromFloorNumber();
+
+                        if (direction == Direction.IDLE) {
+                            if ((int) yCoordinate == pickupAtFloor) {
+                                //                        hmm
+                            } else {
+                                direction = calculateNewDirection(pickupAtFloor);
+                            }
+                        }
+
+                        final Queue<Integer> pQueue = directionQueueMap.get(direction);
+                        pQueue.add(pickupAtFloor);
+
+                    }
+
+                    LOG.info("handled hails {}, at y:{} i'm going:{}, and going to floors {}",
+                            id, yCoordinate, direction, directionQueueMap.get(direction));
+
+                    elevatorService.getAndClearNextFloorDestinationForElevatorId(id).forEach(destinationFloorNumber ->{
+                        if (direction == Direction.IDLE) {
+                            direction = calculateNewDirection(destinationFloorNumber);
+                        }
+
+                        final Queue<Integer> pQueue = directionQueueMap.get(direction);
+                        pQueue.add(destinationFloorNumber);
+
+                    });
+
+                    LOG.info("handle buttons {}, at y:{} i'm going:{}, and going to floors {}",
+                            id, yCoordinate, direction, directionQueueMap.get(direction));
+
+                    if (Direction.IDLE == direction) {
+                        //  do nothing
+
+                    } else if ((int) Math.floor(yCoordinate) == getNextFloor()) {
+                        //                coarse way to know if you should stop at floor
+
+                        yCoordinate = getNextFloor();
+                        this.doorState = DoorState.OPEN;
+
+
+                        final Queue<Integer> nextFloorQueue = directionQueueMap.get(direction);
+
+                        Integer servedFloor = nextFloorQueue.poll();
+                        while (servedFloor != null && (int) servedFloor == nextFloorQueue.peek()) {
+                            nextFloorQueue.poll();
+                        }
+
+                        if (nextFloorQueue.isEmpty()) {
+                            direction = Direction.IDLE;
+                        }
+
+
+                    } else {
+                        doorState = DoorState.CLOSED;
+                        yCoordinate += direction.getIntDirection() + (1.0D / SLEEP_IN_MILLIS);
+                    }
+
+                    LOG.info("finished running {}, y:{} i'm going:{} to floors {}",
+                            id, yCoordinate, direction, directionQueueMap.get(direction));
+
+
+                    Thread.sleep(SLEEP_IN_MILLIS);
+
             } catch (InterruptedException e) {
-                LOG.error("error with sleeping", e);
+                LOG.error("Error for Elevator Agent", e);
             }
         }
 
 
+    }
+
+    private Direction calculateNewDirection(int nextFloorNumber) {
+        return yCoordinate < nextFloorNumber
+                ? Direction.UP
+                : Direction.DOWN;
     }
 }
