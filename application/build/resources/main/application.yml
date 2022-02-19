@@ -1,11 +1,14 @@
 
 logging:
   level:
-    root: info
+    root: INFO
 
 
 server:
   port: 8080
+
+#elevator:
+#  count:1
 
 spring:
   application:
