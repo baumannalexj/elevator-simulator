@@ -31,7 +31,7 @@ public class ApplicationContext {
     public void start() {
 
         for (int index = 0; index < elevatorCount; index++) {
-            ElevatorAgent elevator = new ElevatorAgent(index, elevatorService);
+            ElevatorWorker elevator = new ElevatorWorker(index, elevatorService);
             elevatorRepository.addElevator(elevator);
 
             Thread elevatorThread = new Thread(elevator);
