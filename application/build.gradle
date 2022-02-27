@@ -1,14 +1,15 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.3.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-    id 'java'
+    id "org.springframework.boot" version "2.3.3.RELEASE"
+    id "io.spring.dependency-management" version "1.0.10.RELEASE"
+    id "java"
+    id "org.jetbrains.kotlin.jvm" version "1.6.10"
 }
 
 
 
 compileJava {
-    sourceCompatibility = '11'
-    targetCompatibility = '11'
+    sourceCompatibility = "11"
+    targetCompatibility = "11"
 }
 
 
@@ -17,21 +18,32 @@ repositories {
 }
 
 dependencies {
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
 
 //impl
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-web"
 
 //test
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
 }
 
 test {
     useJUnitPlatform()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 
