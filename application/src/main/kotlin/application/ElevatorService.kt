@@ -4,7 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.*
 import java.util.stream.Collectors
 
 @Service
@@ -32,7 +31,11 @@ class ElevatorService @Autowired constructor(private val repository: ElevatorRep
         if (elevatorDirection !== Direction.IDLE) {
             filteredHailsStream = filteredHailsStream.filter { hail: RequestHail ->
                 val hailFloorNumber = hail.fromFloorNumber.toDouble()
-                if (directionToUse === Direction.UP) yCoordinate <= hailFloorNumber else yCoordinate >= hailFloorNumber
+                if (directionToUse === Direction.UP) {
+                    yCoordinate <= hailFloorNumber
+                } else {
+                    yCoordinate >= hailFloorNumber
+                }
             }
         }
         val requestHails = filteredHailsStream.collect(Collectors.toUnmodifiableList())

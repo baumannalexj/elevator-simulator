@@ -1,6 +1,0 @@
-
-
-allprojects {
-    group = "baumannalexj.elevator"
-    version = "0.0.1-SNAPSHOT"
-}
